@@ -60,3 +60,19 @@ class Review(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} - {self.mark}/5"
+
+
+class ReviewImage(models.Model):
+    image = models.ImageField(upload_to="reviews/", verbose_name="Image")
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, verbose_name="Review", related_name="images")
+
+    def delete(self, *args, **kwargs):
+        # Delete the image file from the filesystem before deleting the object
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+
+        super().delete(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return self.product.title
